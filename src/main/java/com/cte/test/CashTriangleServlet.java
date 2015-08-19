@@ -11,9 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.Array;
+import java.util.*;
 
 /**
  * Created by Artyom on 8/4/2015.
@@ -76,45 +75,76 @@ public class CashTriangleServlet extends HttpServlet implements Runnable {
 
         BufferedReader reader = req.getReader();
         String line;
-        int winningValue = 0, triangleSize = 0;
 
+        //level counter starts from 0
+        int levelCounter = -1;
+
+        //zero index placeholder, so that the real nodes start from 1
+        ArrayList<Integer> triangleArray = new ArrayList<>();
+        triangleArray.add(-1);
+
+        //determine the level of the graph tree
+        //and create an array of nodes (starting from a root node in breadth-first manner)
         while ((line = reader.readLine()) != null) {
 
-            String[] spitedLine = line.split(" ");
-            int largestInLine = -1;
+            List spitedLine = Arrays.asList(line.split(" "));
 
-            for (String stringElement : spitedLine) {
-
-                int numberElement;
-                try {
-                    numberElement = Integer.valueOf(stringElement);
-                } catch (Exception e) {
-                    System.out.print(e.getCause() + "\n" + e.getMessage());
-                    continue;
-                }
-
-                if (largestInLine < numberElement) {
-                    largestInLine = numberElement;
-                }
+            for (Object numericEntry: spitedLine) {
+                triangleArray.add((Integer) numericEntry);
             }
 
-            winningValue += largestInLine;
-            triangleSize++;
+            levelCounter++;
         }
 
-        boolean result;
-        do {
-            result = cacheGateway.write(key, winningValue);
-        } while (!result);
+        //create adjacency list from a list of nodes
+        //using the following formula: current_node_position + node_tree_level + [1 (first child)] or [2 (second child)]
 
-        triangleProcessedCount++;
 
-        if (winningValue > maxSum) maxSum = winningValue;
-        if (winningValue < minSum) minSum = winningValue;
-        if (triangleSize > maxTriangle) maxTriangle = triangleSize;
-        if (triangleSize < minTriangle) minTriangle = triangleSize;
 
-        out.print(winningValue);
+        //region Old logic
+//        int winningValue = 0, triangleSize = 0;
+//
+//        while ((line = reader.readLine()) != null) {
+//
+//            String[] spitedLine = line.split(" ");
+//            int largestInLine = -1;
+//
+//            for (String stringElement : spitedLine) {
+//
+//                int numberElement;
+//                try {
+//                    numberElement = Integer.valueOf(stringElement);
+//                } catch (Exception e) {
+//                    System.out.print(e.getCause() + "\n" + e.getMessage());
+//                    continue;
+//                }
+//
+//                if (largestInLine < numberElement) {
+//                    largestInLine = numberElement;
+//                }
+//            }
+//
+//            winningValue += largestInLine;
+//            triangleSize++;
+//        }
+//
+//        boolean result;
+//        do {
+//            result = cacheGateway.write(key, winningValue);
+//        } while (!result);
+//
+//        triangleProcessedCount++;
+//
+//        if (winningValue > maxSum) maxSum = winningValue;
+//        if (winningValue < minSum) minSum = winningValue;
+//        if (triangleSize > maxTriangle) maxTriangle = triangleSize;
+//        if (triangleSize < minTriangle) minTriangle = triangleSize;
+//
+//        out.print(winningValue);
+        //endregion
+
+
+
 
     }
 
