@@ -1,5 +1,7 @@
 package com.cte.test;
 
+import java.util.ArrayList;
+
 /**
  * Created by Artyom on 8/19/2015.
  */
@@ -10,11 +12,17 @@ public class Node {
     private int vertexLevel;    //node tree graph level
     private int[] vertexEdges;  //adjacency nodes that share edge with current node
 
-    public Node(int vertexNumber, int vertexValue, int vertexLevel) {
+    public Node(int vertexNumber, int vertexLevel, int vertexValue) {
+        this.vertexNumber = vertexNumber;
+        this.vertexLevel = vertexLevel;
+        this.vertexValue = vertexValue;
+    }
+
+    public Node(int vertexNumber, int vertexValue, int vertexLevel, int[] vertexEdges) {
         this.vertexNumber = vertexNumber;
         this.vertexValue = vertexValue;
         this.vertexLevel = vertexLevel;
-        this.vertexEdges = new int[3];  //3 is the maximum number of adjacency nodes in that graph
+        this.vertexEdges = vertexEdges;
     }
 
     public int getVertexNumber() {
@@ -48,4 +56,20 @@ public class Node {
     public void setVertexEdges(int[] vertexEdges) {
         this.vertexEdges = vertexEdges;
     }
+
+    public int getFirstChild() {
+
+        return this.getVertexNumber() + this.getVertexLevel() + 1;
+    }
+
+    public int getSecondChild() {
+
+        return this.getVertexNumber() + this.getVertexLevel() + 2;
+    }
+
+    public boolean isLeaf(int levelCounter) {
+
+        return this.getVertexLevel() == levelCounter;
+    }
+
 }

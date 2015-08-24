@@ -8,10 +8,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.text.html.HTMLDocument;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -76,30 +76,48 @@ public class CashTriangleServlet extends HttpServlet implements Runnable {
         BufferedReader reader = req.getReader();
         String line;
 
-        //level counter starts from 0
-        int levelCounter = -1;
-
-        //zero index placeholder, so that the real nodes start from 1
-        ArrayList<Integer> triangleArray = new ArrayList<>();
-        triangleArray.add(-1);
+        int levelCounter = -1;      //start from zero tree level in while loop
+        int vertexCounter = 0;
+        ArrayList<Node> triangleArray = new ArrayList<>();
+        triangleArray.add(null);    //zero array index place holder, for convenient children search
 
         //determine the level of the graph tree
         //and create an array of nodes (starting from a root node in breadth-first manner)
         while ((line = reader.readLine()) != null) {
 
+            levelCounter++;
+
             List spitedLine = Arrays.asList(line.split(" "));
 
             for (Object numericEntry: spitedLine) {
-                triangleArray.add((Integer) numericEntry);
+
+                vertexCounter++;
+
+                Node node = new Node(vertexCounter, levelCounter, (Integer.parseInt(numericEntry.toString())));
+                triangleArray.add(node);
             }
 
-            levelCounter++;
         }
 
         //create adjacency list from a list of nodes
-        //using the following formula: current_node_position + node_tree_level + [1 (first child)] or [2 (second child)]
+        //using the following formula: current_node_array_index + node_tree_level + [1 (first child)] or [2 (second child)]
+        HashMap<Integer, Node> adjacencyMatrix = new HashMap<>();
 
+        for (int i = 1; i < triangleArray.size(); i++) {
 
+            int[] vertexEdges = new int[2];
+            Node node = triangleArray.get(i);
+
+            //check if the level is the last, no children there
+            if (node.getVertexLevel() != levelCounter) {
+
+                vertexEdges[0] = i + node.getVertexLevel() + 1;
+                vertexEdges[1] = i + node.getVertexLevel() + 2;
+                node.setVertexEdges(vertexEdges);
+            }
+
+            adjacencyMatrix.put(i, node);
+        }
 
         //region Old logic
 //        int winningValue = 0, triangleSize = 0;
@@ -142,8 +160,6 @@ public class CashTriangleServlet extends HttpServlet implements Runnable {
 //
 //        out.print(winningValue);
         //endregion
-
-
 
 
     }
