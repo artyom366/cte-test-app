@@ -101,23 +101,47 @@ public class CashTriangleServlet extends HttpServlet implements Runnable {
 
         //create adjacency list from a list of nodes
         //using the following formula: current_node_array_index + node_tree_level + [1 (first child)] or [2 (second child)]
-        HashMap<Integer, Node> adjacencyMatrix = new HashMap<>();
+        HashMap<Integer, ArrayList<Node>> adjacencyMatrix = new HashMap<>();
+        HashMap<Integer, ArrayList<Node>> adjacencyMatrixReverse = new HashMap<>();
 
         for (int i = 1; i < triangleArray.size(); i++) {
 
-            int[] vertexEdges = new int[2];
             Node node = triangleArray.get(i);
+            ArrayList<Node> childNodes = new ArrayList<>();
 
             //check if the level is the last, no children there
             if (node.getVertexLevel() != levelCounter) {
-
-                vertexEdges[0] = i + node.getVertexLevel() + 1;
-                vertexEdges[1] = i + node.getVertexLevel() + 2;
-                node.setVertexEdges(vertexEdges);
+                childNodes.add(triangleArray.get(i + node.getVertexLevel() + 1));
+                childNodes.add(triangleArray.get(i + node.getVertexLevel() + 2));
             }
 
-            adjacencyMatrix.put(i, node);
+            adjacencyMatrix.put(i, childNodes);
+
+
+           // ArrayList<Node> parentNodes = new ArrayList<>();
+
+            for (Node nodeElement : childNodes) {
+
+                if (nodeElement.getVertexLevel() != 0) {
+
+                    ArrayList<Node> parentNodes = adjacencyMatrixReverse.get(nodeElement.getVertexLevel());
+
+                    if (parentNodes != null) {
+
+                        parentNodes.add(node);
+
+                    } else {
+
+                        parentNodes = new ArrayList<>();
+                        parentNodes.add(node);
+                    }
+
+                    adjacencyMatrixReverse.put(nodeElement.getVertexNumber(), parentNodes);
+                }
+            }
         }
+
+        int i =0;
 
         //region Old logic
 //        int winningValue = 0, triangleSize = 0;
