@@ -3,6 +3,7 @@ package com.cte.test;
 import com.cte.test.utils.CacheGateway;
 import com.cte.test.utils.StatisticsGateway;
 import com.cte.test.utils.StatisticsValidationException;
+import sun.reflect.generics.tree.Tree;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -99,49 +100,80 @@ public class CashTriangleServlet extends HttpServlet implements Runnable {
 
         }
 
-        //create adjacency list from a list of nodes
-        //using the following formula: current_node_array_index + node_tree_level + [1 (first child)] or [2 (second child)]
-        HashMap<Integer, ArrayList<Node>> adjacencyMatrix = new HashMap<>();
-        HashMap<Integer, ArrayList<Node>> adjacencyMatrixReverse = new HashMap<>();
+        int[][] matrix = new int[7][7];
 
-        for (int i = 1; i < triangleArray.size(); i++) {
+            for (int i = 1, j = 1; i < triangleArray.size(); i++) {
 
-            Node node = triangleArray.get(i);
-            ArrayList<Node> childNodes = new ArrayList<>();
+                if (triangleArray.get(i).getVertexLevel() != levelCounter) {
 
-            //check if the level is the last, no children there
-            if (node.getVertexLevel() != levelCounter) {
-                childNodes.add(triangleArray.get(i + node.getVertexLevel() + 1));
-                childNodes.add(triangleArray.get(i + node.getVertexLevel() + 2));
-            }
+                    int firstChild = j + triangleArray.get(j).getVertexLevel() + 1;
+                    int secondChild = j + triangleArray.get(j).getVertexLevel() + 2;
 
-            adjacencyMatrix.put(i, childNodes);
+                    matrix[j][firstChild] = 1;
+                    matrix[j][secondChild] = 1;
 
-
-           // ArrayList<Node> parentNodes = new ArrayList<>();
-
-            for (Node nodeElement : childNodes) {
-
-                if (nodeElement.getVertexLevel() != 0) {
-
-                    ArrayList<Node> parentNodes = adjacencyMatrixReverse.get(nodeElement.getVertexLevel());
-
-                    if (parentNodes != null) {
-
-                        parentNodes.add(node);
-
-                    } else {
-
-                        parentNodes = new ArrayList<>();
-                        parentNodes.add(node);
-                    }
-
-                    adjacencyMatrixReverse.put(nodeElement.getVertexNumber(), parentNodes);
-                }
+                    j++;
             }
         }
 
-        int i =0;
+        GraphPathFinder graphPathFinder = new GraphPathFinder(matrix);
+        graphPathFinder.createPath(6, 6, 0);
+
+
+
+
+        int i = 0;
+
+
+        //region Old logic
+//        //create adjacency list from a list of nodes
+//        //using the following formula: current_node_array_index + node_tree_level + [1 (first child)] or [2 (second child)]
+//        TreeMap<Integer, ArrayList<Node>> adjacencyMatrix = new TreeMap<>();
+//        TreeMap<Integer, ArrayList<Node>> adjacencyMatrixReverse = new TreeMap<>();
+//
+//        for (int i = 1; i < triangleArray.size(); i++) {
+//
+//            Node node = triangleArray.get(i);
+//            ArrayList<Node> childNodes = new ArrayList<>();
+//
+//            //check if the level is the last, no children there
+//            if (node.getVertexLevel() != levelCounter) {
+//                childNodes.add(triangleArray.get(i + node.getVertexLevel() + 1));
+//                childNodes.add(triangleArray.get(i + node.getVertexLevel() + 2));
+//            }
+//
+//            adjacencyMatrix.put(i, childNodes);
+//
+//
+//           // ArrayList<Node> parentNodes = new ArrayList<>();
+//
+//            for (Node nodeElement : childNodes) {
+//
+//                if (nodeElement.getVertexLevel() != 0) {
+//
+//                    ArrayList<Node> parentNodes = adjacencyMatrixReverse.get(nodeElement.getVertexNumber());
+//
+//                    if (parentNodes != null) {
+//
+//                        parentNodes.add(node);
+//
+//                    } else {
+//
+//                        parentNodes = new ArrayList<>();
+//                        parentNodes.add(node);
+//                    }
+//
+//                    adjacencyMatrixReverse.put(nodeElement.getVertexNumber(), parentNodes);
+//                }
+//            }
+//        }
+//
+//        Integer lastKey = adjacencyMatrixReverse.lastKey();
+//        GraphPathFinder graphPathFinder = new GraphPathFinder(adjacencyMatrixReverse, adjacencyMatrix, levelCounter);
+//
+//
+//        graphPathFinder.createPath(lastKey);
+//endregion
 
         //region Old logic
 //        int winningValue = 0, triangleSize = 0;
